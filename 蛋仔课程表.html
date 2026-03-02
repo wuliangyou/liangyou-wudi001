@@ -1,0 +1,965 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>四年级1班课程表 - 蛋仔派对版</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #FFD166 0%, #FF6B95 50%, #8C6FE6 100%);
+            min-height: 100vh;
+            padding: 15px;
+            background-image: 
+                url('https://gw.alicdn.com/imgextra/i1/O1CN018Q7s8X1x9Z759z789_!!6000000006312-2-tps-1920-1080.png'),
+                linear-gradient(135deg, #FFD166 0%, #FF6B95 50%, #8C6FE6 100%);
+            background-size: cover, cover;
+            background-repeat: no-repeat;
+            background-position: center, center;
+            background-blend-mode: soft-light;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.98);
+            border-radius: 28px;
+            box-shadow: 0 15px 60px rgba(140, 111, 230, 0.4);
+            overflow: hidden;
+            border: 5px solid #FFD166;
+            position: relative;
+        }
+
+        /* 蛋仔头部装饰 - 修复手机端重叠问题 */
+        .header {
+            background: linear-gradient(90deg, #FF6B95, #8C6FE6);
+            color: white;
+            padding: 20px 15px;
+            text-align: center;
+            position: relative;
+            border-bottom: 5px solid #FFD166;
+            overflow: hidden;
+        }
+
+        /* 蛋仔游戏角色头像 - 使用用户提供的图片 */
+        .header::before {
+            content: "";
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 60px;
+            height: 60px;
+            background: url('https://p26-flow-imagex-download-sign.byteimg.com/tos-cn-i-a9rns2rl98/972008573ec24d33942a4cca5ba95eb4.png~tplv-a9rns2rl98-24:720:720.png?lk3s=8e244e95&rcl=2026030218115210F20A3EE9EE0DCDEC1A&rrcfp=8a172a1a&x-expires=1773051112&x-signature=2Id3BVv65Kti1N51Wf9D7dWSQiw%3D') no-repeat center/cover;
+            border-radius: 50%;
+            border: 3px solid white;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+            z-index: 2;
+            object-fit: cover;
+        }
+
+        .header::after {
+            content: "";
+            position: absolute;
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.15);
+            right: -60px;
+            top: -60px;
+        }
+
+        .header-content {
+            margin-left: 70px; /* 为左侧头像留出空间，避免重叠 */
+            position: relative;
+            z-index: 2;
+        }
+
+        .header h1 {
+            font-size: 22px;
+            margin-bottom: 8px;
+            text-shadow: 0 3px 10px rgba(0,0,0,0.2);
+            font-weight: bold;
+            letter-spacing: 1px;
+            line-height: 1.3;
+        }
+
+        .header h1 span {
+            color: #FFD166;
+            font-size: 26px;
+        }
+
+        .header p {
+            font-size: 13px;
+            opacity: 0.95;
+            line-height: 1.4;
+        }
+
+        /* 蛋仔游戏风格标签栏 */
+        .tabs {
+            display: flex;
+            background: #FFF5E6;
+            border-bottom: 4px solid #FF6B95;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            padding: 0 5px;
+        }
+
+        .tab {
+            flex: 1;
+            min-width: 70px;
+            padding: 12px 8px;
+            text-align: center;
+            cursor: pointer;
+            font-weight: bold;
+            color: #FF6B95;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+            border: none;
+            background: transparent;
+            font-size: 14px;
+            position: relative;
+        }
+
+        .tab::after {
+            content: "🐥";
+            display: inline-block;
+            margin-right: 4px;
+            opacity: 0;
+            transition: all 0.3s ease;
+            transform: scale(0.8);
+        }
+
+        .tab.active {
+            color: #8C6FE6;
+            background: white;
+            box-shadow: inset 0 -4px 0 #FFD166;
+        }
+
+        .tab.active::after {
+            opacity: 1;
+            transform: scale(1.1);
+        }
+
+        .tab:hover {
+            background: #FFE8F0;
+            transform: translateY(-2px);
+            color: #8C6FE6;
+        }
+
+        .content {
+            padding: 20px;
+            position: relative;
+        }
+
+        .content::before {
+            content: "";
+            position: absolute;
+            width: 90px;
+            height: 90px;
+            background: url('https://gw.alicdn.com/imgextra/i2/O1CN01m8s7651z8907890_!!6000000007123-2-tps-512-512.png') no-repeat center/cover;
+            opacity: 0.12;
+            bottom: 10px;
+            right: 10px;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .day-content {
+            display: none;
+            position: relative;
+            z-index: 2;
+        }
+
+        .day-content.active {
+            display: block;
+            animation: fadeIn 0.4s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* 调整时间列宽度，确保时间一行显示 */
+        .lesson-grid {
+            display: grid;
+            grid-template-columns: 140px 1fr;
+            gap: 10px;
+            align-items: stretch;
+        }
+
+        .lesson-time-col {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #FF6B95;
+            font-size: 14px;
+            font-weight: bold;
+            background: #FFEEF2;
+            border-radius: 10px 0 0 10px;
+            padding: 10px 15px;
+            white-space: nowrap;
+            border: 2px solid #FFD8E0;
+        }
+
+        .lesson-content-col {
+            width: 100%;
+        }
+
+        /* 蛋仔游戏风格课程项 */
+        .lesson-item {
+            background: linear-gradient(135deg, #FFFFFF 0%, #FFF5E6 100%);
+            border-radius: 15px;
+            padding: 12px 15px;
+            box-shadow: 0 6px 18px rgba(255, 107, 149, 0.12);
+            border: 3px solid #FFD166;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            transition: all 0.2s ease;
+        }
+
+        .lesson-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(255, 107, 149, 0.18);
+        }
+
+        .lesson-name {
+            font-size: 16px;
+            font-weight: bold;
+            color: #333;
+            display: flex;
+            align-items: center;
+        }
+
+        .lesson-name::before {
+            content: "";
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            background: #FF6B95;
+            border-radius: 50%;
+            margin-right: 8px;
+            box-shadow: 0 0 0 3px rgba(255, 107, 149, 0.3);
+        }
+
+        /* 休息时段样式 - 蛋仔游戏浅色系 */
+        .lesson-break .lesson-item {
+            background: linear-gradient(135deg, #F8F9FA 0%, #F2E8FF 100%);
+            border-color: #8C6FE6;
+        }
+
+        .lesson-break .lesson-name {
+            color: #666;
+            font-weight: normal;
+            font-size: 15px;
+        }
+
+        .lesson-break .lesson-name::before {
+            background: #8C6FE6;
+            box-shadow: 0 0 0 3px rgba(140, 111, 230, 0.3);
+        }
+
+        /* 长时段合并样式 */
+        .long-break-row {
+            grid-row: span 2;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 15px;
+            font-size: 12px;
+            color: #8C6FE6;
+            background: #FFF5E6;
+            margin-top: 10px;
+            border-top: 4px solid #FFD166;
+            font-weight: 500;
+        }
+
+        /* 手机适配优化 - 重点修复手机端重叠问题 */
+        @media (max-width: 480px) {
+            .header {
+                padding: 15px 10px;
+            }
+
+            .header::before {
+                width: 45px;
+                height: 45px;
+                left: 10px;
+            }
+
+            .header-content {
+                margin-left: 55px; /* 手机端为头像留出更小的空间 */
+            }
+
+            .header h1 {
+                font-size: 18px;
+                line-height: 1.2;
+            }
+            
+            .header h1 span {
+                font-size: 20px;
+            }
+
+            .header p {
+                font-size: 11px;
+                line-height: 1.3;
+            }
+            
+            .lesson-grid {
+                grid-template-columns: 120px 1fr;
+                gap: 8px;
+            }
+            
+            .lesson-time-col {
+                font-size: 12px;
+                padding: 8px 10px;
+            }
+            
+            .lesson-name {
+                font-size: 14px;
+            }
+            
+            .lesson-item {
+                padding: 10px 12px;
+            }
+            
+            .container {
+                max-width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="header-content">
+                <h1>四年级1班课程表 <span>🎮</span> 蛋仔派对版</h1>
+                <p>2025学年第2学期 · 普通小学白银路分校 | 快乐蛋仔，快乐学习</p>
+            </div>
+        </div>
+
+        <div class="tabs">
+            <button class="tab active" data-day="monday">星期一</button>
+            <button class="tab" data-day="tuesday">星期二</button>
+            <button class="tab" data-day="wednesday">星期三</button>
+            <button class="tab" data-day="thursday">星期四</button>
+            <button class="tab" data-day="friday">星期五</button>
+        </div>
+
+        <div class="content">
+            <!-- 星期一 -->
+            <div id="monday" class="day-content active">
+                <div class="lesson-grid">
+                    <!-- 第一节课 -->
+                    <div class="lesson-time-col">08:20 - 08:55</div>
+                    <div class="lesson-content-col">
+                        <div class="lesson-item">
+                            <div class="lesson-name">📖 语文</div>
+                        </div>
+                    </div>
+
+                    <!-- 小课间 -->
+                    <div class="lesson-time-col">08:55 - 09:05</div>
+                    <div class="lesson-content-col lesson-break">
+                        <div class="lesson-item">
+                            <div class="lesson-name">小课间休息 🐥</div>
+                        </div>
+                    </div>
+
+                    <!-- 第二节课 -->
+                    <div class="lesson-time-col">09:05 - 09:40</div>
+                    <div class="lesson-content-col">
+                        <div class="lesson-item">
+                            <div class="lesson-name">⚖️ 道德与法治</div>
+                        </div>
+                    </div>
+
+                    <!-- 大课间 -->
+                    <div class="lesson-time-col">09:40 - 10:15</div>
+                    <div class="lesson-content-col lesson-break">
+                        <div class="lesson-item">
+                            <div class="lesson-name">大课间活动 🎈</div>
+                        </div>
+                    </div>
+
+                    <!-- 第三节课 -->
+                    <div class="lesson-time-col">10:15 - 10:55</div>
+                    <div class="lesson-content-col">
+                        <div class="lesson-item">
+                            <div class="lesson-name">🔢 数学 (含眼保健操)</div>
+                        </div>
+                    </div>
+
+                    <!-- 小课间 -->
+                    <div class="lesson-time-col">10:55 - 11:05</div>
+                    <div class="lesson-content-col lesson-break">
+                        <div class="lesson-item">
+                            <div class="lesson-name">小课间休息 🐥</div>
+                        </div>
+                    </div>
+
+                    <!-- 第四节课 -->
+                    <div class="lesson-time-col">11:05 - 11:40</div>
+                    <div class="lesson-content-col">
+                        <div class="lesson-item">
+                            <div class="lesson-name">🎨 美术</div>
+                        </div>
+                    </div>
+
+                    <!-- 午休 -->
+                    <div class="lesson-time-col long-break-row">11:40 - 13:05</div>
+                    <div class="lesson-content-col lesson-break long-break-row">
+                        <div class="lesson-item">
+                            <div class="lesson-name">🥪 午休时间 (含午会) 🐥</div>
+                        </div>
+                    </div>
+
+                    <!-- 第五节课 -->
+                    <div class="lesson-time-col">13:05 - 13:45</div>
+                    <div class="lesson-content-col">
+                        <div class="lesson-item">
+                            <div class="lesson-name">🌿 自然 (含眼保健操)</div>
+                        </div>
+                    </div>
+
+                    <!-- 小课间 -->
+                    <div class="lesson-time-col">13:45 - 13:55</div>
+                    <div class="lesson-content-col lesson-break">
+                        <div class="lesson-item">
+                            <div class="lesson-name">小课间休息 🐥</div>
+                        </div>
+                    </div>
+
+                    <!-- 第六节课 -->
+                    <div class="lesson-time-col">13:55 - 14:30</div>
+                    <div class="lesson-content-col">
+                        <div class="lesson-item">
+                            <div class="lesson-name">🌍 外语</div>
+                        </div>
+                    </div>
+
+                    <!-- 小课间 -->
+                    <div class="lesson-time-col">14:30 - 14:45</div>
+                    <div class="lesson-content-col lesson-break">
+                        <div class="lesson-item">
+                            <div class="lesson-name">小课间休息 🐥</div>
+                        </div>
+                    </div>
+
+                    <!-- 第七节课 -->
+                    <div class="lesson-time-col">14:45 - 15:20</div>
+                    <div class="lesson-content-col">
+                        <div class="lesson-item">
+                            <div class="lesson-name">🏃 体育与健身</div>
+                        </div>
+                    </div>
+
+                    <!-- 小课间 -->
+                    <div class="lesson-time-col">15:20 - 15:30</div>
+                    <div class="lesson-content-col lesson-break">
+                        <div class="lesson-item">
+                            <div class="lesson-name">小课间休息 🐥</div>
+                        </div>
+                    </div>
+
+                    <!-- 课后服务 -->
+                    <div class="lesson-time-col">15:30 - 18:00</div>
+                    <div class="lesson-content-col lesson-break">
+                        <div class="lesson-item">
+                            <div class="lesson-name">📚 课后服务 🎮</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 星期二 -->
+            <div id="tuesday" class="day-content">
+                <div class="lesson-grid">
+                    <div class="lesson-time-col">08:20 - 08:55</div>
+                    <div class="lesson-content-col">
+                        <div class="lesson-item">
+                            <div class="lesson-name">🌍 外语</div>
+                        </div>
+                    </div>
+
+                    <div class="lesson-time-col">08:55 - 09:05</div>
+                    <div class="lesson-content-col lesson-break">
+                        <div class="lesson-item">
+                            <div class="lesson-name">小课间休息 🐥</div>
+                        </div>
+                    </div>
+
+                    <div class="lesson-time-col">09:05 - 09:40</div>
+                    <div class="lesson-content-col">
+                        <div class="lesson-item">
+                            <div class="lesson-name">📖 语文</div>
+                        </div>
+                    </div>
+
+                    <div class="lesson-time-col">09:40 - 10:15</div>
+                    <div class="lesson-content-col lesson-break">
+                        <div class="lesson-item">
+                            <div class="lesson-name">大课间活动 🎈</div>
+                        </div>
+                    </div>
+
+                    <div class="lesson-time-col">10:15 - 10:55</div>
+                    <div class="lesson-content-col">
+                        <div class="lesson-item">
+                            <div class="lesson-name">🔢 数学</div>
+                        </div>
+                    </div>
+
+                    <div class="lesson-time-col">10:55 - 11:05</div>
+                    <div class="lesson-content-col lesson-break">
+                        <div class="lesson-item">
+                            <div class="lesson-name">小课间休息 🐥</div>
+                        </div>
+                    </div>
+
+                    <div class="lesson-time-col">11:05 - 11:40</div>
+                    <div class="lesson-content-col">
+                        <div class="lesson-item">
+                            <div class="lesson-name">🎵 音乐</div>
+                        </div>
+                    </div>
+
+                    <div class="lesson-time-col long-break-row">11:40 - 13:05</div>
+                    <div class="lesson-content-col lesson-break long-break-row">
+                        <div class="lesson-item">
+                            <div class="lesson-name">🥪 午休时间 (含午会) 🐥</div>
+                        </div>
+                    </div>
+
+                    <div class="lesson-time-col">13:05 - 13:45</div>
+                    <div class="lesson-content-col">
+                        <div class="lesson-item">
+                            <div class="lesson-name">🤖 拓展型课程：人工智能基础</div>
+                        </div>
+                    </div>
+
+                    <div class="lesson-time-col">13:45 - 13:55</div>
+                    <div class="lesson-content-col lesson-break">
+                        <div class="lesson-item">
+                            <div class="lesson-name">小课间休息 🐥</div>
+                        </div>
+                    </div>
+
+                    <div class="lesson-time-col">13:55 - 14:30</div>
+                    <div class="lesson-content-col">
+                        <div class="lesson-item">
+                            <div class="lesson-name">🏃 体育与健身</div>
+                        </div>
+                    </div>
+
+                    <div class="lesson-time-col">14:30 - 14:45</div>
+                    <div class="lesson-content-col lesson-break">
+                        <div class="lesson-item">
+                            <div class="lesson-name">小课间休息 🐥</div>
+                        </div>
+                    </div>
+
+                    <div class="lesson-time-col">14:45 - 15:20</div>
+                    <div class="lesson-content-col">
+                        <div class="lesson-item">
+                            <div class="lesson-name">⚖️ 道德与法治</div>
+                        </div>
+                    </div>
+
+                    <div class="lesson-time-col">15:20 - 15:30</div>
+                    <div class="lesson-content-col lesson-break">
+                        <div class="lesson-item">
+                            <div class="lesson-name">小课间休息 🐥</div>
+                        </div>
+                    </div>
+
+                    <div class="lesson-time-col">15:30 - 18:00</div>
+                    <div class="lesson-content-col lesson-break">
+                        <div class="lesson-item">
+                            <div class="lesson-name">📚 课后服务 🎮</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 星期三 -->
+            <div id="wednesday" class="day-content">
+                <div class="lesson-grid">
+                    <div class="lesson-time-col">08:20 - 08:55</div>
+                    <div class="lesson-content-col">
+                        <div class="lesson-item">
+                            <div class="lesson-name">🌍 外语</div>
+                        </div>
+                    </div>
+
+                    <div class="lesson-time-col">08:55 - 09:05</div>
+                    <div class="lesson-content-col lesson-break">
+                        <div class="lesson-item">
+                            <div class="lesson-name">小课间休息 🐥</div>
+                        </div>
+                    </div>
+
+                    <div class="lesson-time-col">09:05 - 09:40</div>
+                    <div class="lesson-content-col">
+                        <div class="lesson-item">
+                            <div class="lesson-name">📖 语文</div>
+                        </div>
+                    </div>
+
+                    <div class="lesson-time-col">09:40 - 10:15</div>
+                    <div class="lesson-content-col lesson-break">
+                        <div class="lesson-item">
+                            <div class="lesson-name">大课间活动 🎈</div>
+                        </div>
+                    </div>
+
+                    <div class="lesson-time-col">10:15 - 10:55</div>
+                    <div class="lesson-content-col">
+                        <div class="lesson-item">
+                            <div class="lesson-name">✍️ 语文（写字）</div>
+                        </div>
+                    </div>
+
+                    <div class="lesson-time-col">10:55 - 11:05</div>
+                    <div class="lesson-content-col lesson-break">
+                        <div class="lesson-item">
+                            <div class="lesson-name">小课间休息 🐥</div>
+                        </div>
+                    </div>
+
+                    <div class="lesson-time-col">11:05 - 11:40</div>
+                    <div class="lesson-content-col">
+                        <div class="lesson-item">
+                            <div class="lesson-name">🔢 数学</div>
+                        </div>
+                    </div>
+
+                    <div class="lesson-time-col long-break-row">11:40 - 13:05</div>
+                    <div class="lesson-content-col lesson-break long-break-row">
+                        <div class="lesson-item">
+                            <div class="lesson-name">🥪 午休时间 (含午会) 🐥</div>
+                        </div>
+                    </div>
+
+                    <div class="lesson-time-col">13:05 - 13:45</div>
+                    <div class="lesson-content-col">
+                        <div class="lesson-item">
+                            <div class="lesson-name">🔍 探究型课程：主题活动</div>
+                        </div>
+                    </div>
+
+                    <div class="lesson-time-col">13:45 - 13:55</div>
+                    <div class="lesson-content-col lesson-break">
+                        <div class="lesson-item">
+                            <div class="lesson-name">小课间休息 🐥</div>
+                        </div>
+                    </div>
+
+                    <div class="lesson-time-col">13:55 - 14:30</div>
+                    <div class="lesson-content-col">
+                        <div class="lesson-item">
+                            <div class="lesson-name">🏃 体育与健身</div>
+                        </div>
+                    </div>
+
+                    <div class="lesson-time-col">14:30 - 14:45</div>
+                    <div class="lesson-content-col lesson-break">
+                        <div class="lesson-item">
+                            <div class="lesson-name">小课间休息 🐥</div>
+                        </div>
+                    </div>
+
+                    <div class="lesson-time-col">14:45 - 15:20</div>
+                    <div class="lesson-content-col">
+                        <div class="lesson-item">
+                            <div class="lesson-name">👥 班团队活动</div>
+                        </div>
+                    </div>
+
+                    <div class="lesson-time-col">15:20 - 15:30</div>
+                    <div class="lesson-content-col lesson-break">
+                        <div class="lesson-item">
+                            <div class="lesson-name">小课间休息 🐥</div>
+                        </div>
+                    </div>
+
+                    <div class="lesson-time-col">15:30 - 18:00</div>
+                    <div class="lesson-content-col lesson-break">
+                        <div class="lesson-item">
+                            <div class="lesson-name">🏀 课后服务（体育活动） 🎮</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 星期四 -->
+            <div id="thursday" class="day-content">
+                <div class="lesson-grid">
+                    <div class="lesson-time-col">08:20 - 08:55</div>
+                    <div class="lesson-content-col">
+                        <div class="lesson-item">
+                            <div class="lesson-name">📖 语文</div>
+                        </div>
+                    </div>
+
+                    <div class="lesson-time-col">08:55 - 09:05</div>
+                    <div class="lesson-content-col lesson-break">
+                        <div class="lesson-item">
+                            <div class="lesson-name">小课间休息 🐥</div>
+                        </div>
+                    </div>
+
+                    <div class="lesson-time-col">09:05 - 09:40</div>
+                    <div class="lesson-content-col">
+                        <div class="lesson-item">
+                            <div class="lesson-name">🌿 自然</div>
+                        </div>
+                    </div>
+
+                    <div class="lesson-time-col">09:40 - 10:15</div>
+                    <div class="lesson-content-col lesson-break">
+                        <div class="lesson-item">
+                            <div class="lesson-name">大课间活动 🎈</div>
+                        </div>
+                    </div>
+
+                    <div class="lesson-time-col">10:15 - 10:55</div>
+                    <div class="lesson-content-col">
+                        <div class="lesson-item">
+                            <div class="lesson-name">🌍 外语</div>
+                        </div>
+                    </div>
+
+                    <div class="lesson-time-col">10:55 - 11:05</div>
+                    <div class="lesson-content-col lesson-break">
+                        <div class="lesson-item">
+                            <div class="lesson-name">小课间休息 🐥</div>
+                        </div>
+                    </div>
+
+                    <div class="lesson-time-col">11:05 - 11:40</div>
+                    <div class="lesson-content-col">
+                        <div class="lesson-item">
+                            <div class="lesson-name">🔢 数学</div>
+                        </div>
+                    </div>
+
+                    <div class="lesson-time-col long-break-row">11:40 - 13:05</div>
+                    <div class="lesson-content-col lesson-break long-break-row">
+                        <div class="lesson-item">
+                            <div class="lesson-name">🥪 午休时间 (含午会) 🐥</div>
+                        </div>
+                    </div>
+
+                    <div class="lesson-time-col">13:05 - 13:45</div>
+                    <div class="lesson-content-col">
+                        <div class="lesson-item">
+                            <div class="lesson-name">🛠️ 劳动技术</div>
+                        </div>
+                    </div>
+
+                    <div class="lesson-time-col">13:45 - 13:55</div>
+                    <div class="lesson-content-col lesson-break">
+                        <div class="lesson-item">
+                            <div class="lesson-name">小课间休息 🐥</div>
+                        </div>
+                    </div>
+
+                    <div class="lesson-time-col">13:55 - 14:30</div>
+                    <div class="lesson-content-col">
+                        <div class="lesson-item">
+                            <div class="lesson-name">⚖️ 道德与法治</div>
+                        </div>
+                    </div>
+
+                    <div class="lesson-time-col">14:30 - 14:45</div>
+                    <div class="lesson-content-col lesson-break">
+                        <div class="lesson-item">
+                            <div class="lesson-name">小课间休息 🐥</div>
+                        </div>
+                    </div>
+
+                    <div class="lesson-time-col">14:45 - 15:20</div>
+                    <div class="lesson-content-col">
+                        <div class="lesson-item">
+                            <div class="lesson-name">🏃 体育与健身</div>
+                        </div>
+                    </div>
+
+                    <div class="lesson-time-col">15:20 - 15:30</div>
+                    <div class="lesson-content-col lesson-break">
+                        <div class="lesson-item">
+                            <div class="lesson-name">小课间休息 🐥</div>
+                        </div>
+                    </div>
+
+                    <div class="lesson-time-col">15:30 - 18:00</div>
+                    <div class="lesson-content-col lesson-break">
+                        <div class="lesson-item">
+                            <div class="lesson-name">🏀 课后服务（体育活动） 🎮</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 星期五 -->
+            <div id="friday" class="day-content">
+                <div class="lesson-grid">
+                    <div class="lesson-time-col">08:20 - 08:55</div>
+                    <div class="lesson-content-col">
+                        <div class="lesson-item">
+                            <div class="lesson-name">🔢 数学</div>
+                        </div>
+                    </div>
+
+                    <div class="lesson-time-col">08:55 - 09:05</div>
+                    <div class="lesson-content-col lesson-break">
+                        <div class="lesson-item">
+                            <div class="lesson-name">小课间休息 🐥</div>
+                        </div>
+                    </div>
+
+                    <div class="lesson-time-col">09:05 - 09:40</div>
+                    <div class="lesson-content-col">
+                        <div class="lesson-item">
+                            <div class="lesson-name">📖 语文</div>
+                        </div>
+                    </div>
+
+                    <div class="lesson-time-col">09:40 - 10:15</div>
+                    <div class="lesson-content-col lesson-break">
+                        <div class="lesson-item">
+                            <div class="lesson-name">大课间活动 🎈</div>
+                        </div>
+                    </div>
+
+                    <div class="lesson-time-col">10:15 - 10:55</div>
+                    <div class="lesson-content-col">
+                        <div class="lesson-item">
+                            <div class="lesson-name">🌍 外语</div>
+                        </div>
+                    </div>
+
+                    <div class="lesson-time-col">10:55 - 11:05</div>
+                    <div class="lesson-content-col lesson-break">
+                        <div class="lesson-item">
+                            <div class="lesson-name">小课间休息 🐥</div>
+                        </div>
+                    </div>
+
+                    <div class="lesson-time-col">11:05 - 11:40</div>
+                    <div class="lesson-content-col">
+                        <div class="lesson-item">
+                            <div class="lesson-name">🏀 体育与健身（篮球）</div>
+                        </div>
+                    </div>
+
+                    <div class="lesson-time-col long-break-row">11:40 - 13:05</div>
+                    <div class="lesson-content-col lesson-break long-break-row">
+                        <div class="lesson-item">
+                            <div class="lesson-name">🥪 午休时间 (含午会) 🐥</div>
+                        </div>
+                    </div>
+
+                    <div class="lesson-time-col">13:05 - 13:45</div>
+                    <div class="lesson-content-col">
+                        <div class="lesson-item">
+                            <div class="lesson-name">💻 信息科技</div>
+                        </div>
+                    </div>
+
+                    <div class="lesson-time-col">13:45 - 13:55</div>
+                    <div class="lesson-content-col lesson-break">
+                        <div class="lesson-item">
+                            <div class="lesson-name">小课间休息 🐥</div>
+                        </div>
+                    </div>
+
+                    <div class="lesson-time-col">13:55 - 14:30</div>
+                    <div class="lesson-content-col">
+                        <div class="lesson-item">
+                            <div class="lesson-name">🎵 音乐</div>
+                        </div>
+                    </div>
+
+                    <div class="lesson-time-col">14:30 - 14:45</div>
+                    <div class="lesson-content-col lesson-break">
+                        <div class="lesson-item">
+                            <div class="lesson-name">小课间休息 🐥</div>
+                        </div>
+                    </div>
+
+                    <div class="lesson-time-col">14:45 - 15:20</div>
+                    <div class="lesson-content-col lesson-break">
+                        <div class="lesson-item">
+                            <div class="lesson-name">❤️ “爱心陪护”活动 🐥</div>
+                        </div>
+                    </div>
+
+                    <div class="lesson-time-col">15:20 - 15:30</div>
+                    <div class="lesson-content-col lesson-break">
+                        <div class="lesson-item">
+                            <div class="lesson-name">小课间休息 🐥</div>
+                        </div>
+                    </div>
+
+                    <div class="lesson-time-col">15:30 - 18:00</div>
+                    <div class="lesson-content-col lesson-break">
+                        <div class="lesson-item">
+                            <div class="lesson-name">📚 课后服务 🎮</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>🐥 蛋仔派对专属课程表 | 春季研学活动：第六周（4月7日） | 午会：12:45-13:00 | 快乐蛋仔，快乐学习 🎮</p>
+        </div>
+    </div>
+
+    <script>
+        // 标签切换逻辑
+        const tabs = document.querySelectorAll('.tab');
+        const dayContents = document.querySelectorAll('.day-content');
+
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                // 移除所有active状态
+                tabs.forEach(t => t.classList.remove('active'));
+                dayContents.forEach(c => c.classList.remove('active'));
+                
+                // 为当前点击的标签和对应内容添加active
+                tab.classList.add('active');
+                const dayId = tab.getAttribute('data-day');
+                const targetContent = document.getElementById(dayId);
+                
+                // 确保找到对应的内容区域
+                if (targetContent) {
+                    targetContent.classList.add('active');
+                }
+            });
+        });
+
+        // 页面加载完成后确保默认显示星期一
+        document.addEventListener('DOMContentLoaded', function() {
+            const defaultTab = document.querySelector('.tab[data-day="monday"]');
+            if (defaultTab) {
+                defaultTab.classList.add('active');
+            }
+            const defaultContent = document.getElementById('monday');
+            if (defaultContent) {
+                defaultContent.classList.add('active');
+            }
+        });
+    </script>
+</body>
+</html>
